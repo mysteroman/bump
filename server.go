@@ -10,11 +10,11 @@ import (
 )
 
 type RawEntry struct {
-  Timestamp uint64
+  Timestamp []byte
   Lat, Long, Err, Value float64
 }
 
-func readUInt64(bytes []byte) uint64 {
+func readFloat64(bytes []byte) float64 {
   var result uint64 = 0
   for i, b := range bytes {
     if i >= 8 {
@@ -22,16 +22,12 @@ func readUInt64(bytes []byte) uint64 {
     }
     result = (result << 8) | uint64(b)
   }
-  return result
-}
-
-func readFloat64(bytes []byte) float64 {
-  return math.Float64frombits(readUInt64(bytes))
+  return math.Float64frombits(result)
 }
 
 func newRawEntry(data []byte) RawEntry {
   return RawEntry{
-    readUInt64(data[0:8]),
+    data[0:8],
     readFloat64(data[8:16]),
     readFloat64(data[16:24]),
     readFloat64(data[24:32]),
@@ -39,7 +35,7 @@ func newRawEntry(data []byte) RawEntry {
 }
 
 func push(db *sql.DB, c chan RawEntry) {
-  insert, err := db.Prepare("insert into raw_points (timestamp, latitude, longitude, error, value) values (FROM_UNIXTIME(?), ?, ?, ?, ?)")
+  insert, err := db.Prepare("insert into raw_points (timestamp, latitude, longitude, error, value) values (?, ?, ?, ?, ?)")
   if err != nil {
     panic(err.Error())
   }
