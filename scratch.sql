@@ -1,3 +1,5 @@
+use bump;
+
 create table raw_point (
     id bigint not null primary key auto_increment,
     timestamp datetime not null,
