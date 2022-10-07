@@ -10,11 +10,11 @@ import (
 )
 
 type RawEntry struct {
-  Timestamp []byte
+  Timestamp time
   Lat, Long, Err, Value float64
 }
 
-func readFloat64(bytes []byte) float64 {
+func readUInt64(bytes []byte) uint64 {
   var result uint64 = 0
   for i, b := range bytes {
     if i >= 8 {
@@ -22,12 +22,16 @@ func readFloat64(bytes []byte) float64 {
     }
     result = (result << 8) | uint64(b)
   }
-  return math.Float64frombits(result)
+  return result
+}
+
+func readFloat64(bytes []byte) float64 {
+  return math.Float64frombits(readUInt64(bytes))
 }
 
 func newRawEntry(data []byte) RawEntry {
   return RawEntry{
-    data[0:8],
+    time.Unix(int64(readUInt64(data[0:8]))),
     readFloat64(data[8:16]),
     readFloat64(data[16:24]),
     readFloat64(data[24:32]),
