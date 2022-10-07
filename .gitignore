@@ -5,3 +5,4 @@ composer.lock
 /tests/coverage
 /logs/
 /locale/cache
+.env
