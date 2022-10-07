@@ -1,6 +1,8 @@
 package main
 
 import (
+  "godotenv"
+  "os"
   "fmt"
   "net"
   "math"
@@ -54,6 +56,8 @@ func push(db *sql.DB, c chan RawEntry) {
 }
 
 func main() {
+  godotenv.Load()
+
   PORT := ":53"
   s, err := net.ResolveUDPAddr("udp4", PORT)
   if err != nil {
@@ -67,7 +71,7 @@ func main() {
 
   defer conn.Close()
 
-  db, err := sql.Open("mysql", "bump:WV34$T$V;sorg@/bump")
+  db, err := sql.Open("mysql", os.GetEnv("DSN"))
   if err != nil {
     panic(err.Error())
   }
