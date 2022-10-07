@@ -10,7 +10,7 @@ import (
 )
 
 type RawEntry struct {
-  Timestamp int64
+  Timestamp uint64
   Lat, Long, Err, Value float64
 }
 
@@ -31,7 +31,7 @@ func readFloat64(bytes []byte) float64 {
 
 func newRawEntry(data []byte) RawEntry {
   return RawEntry{
-    int64(readUInt64(data[0:8])),
+    readUInt64(data[0:8]),
     readFloat64(data[8:16]),
     readFloat64(data[16:24]),
     readFloat64(data[24:32]),
@@ -52,8 +52,6 @@ func push(db *sql.DB, c chan RawEntry) {
     }
   }
 }
-
-var db *sql.DB
 
 func main() {
   PORT := ":53"
