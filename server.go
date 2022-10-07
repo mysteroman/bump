@@ -71,7 +71,7 @@ func main() {
 
   defer conn.Close()
 
-  db, err := sql.Open("mysql", os.GetEnv("DSN"))
+  db, err := sql.Open("mysql", os.Getenv("DSN"))
   if err != nil {
     panic(err.Error())
   }
