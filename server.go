@@ -75,7 +75,7 @@ func main() {
   }
   defer db.Close()
 
-  db.SetMaxConnLifetime(time.Minute * 3)
+  db.SetConnMaxLifetime(time.Minute * 3)
   db.SetMaxOpenConns(10)
   db.SetMaxIdleConns(10)
 
