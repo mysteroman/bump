@@ -39,7 +39,7 @@ func newRawEntry(data []byte) RawEntry {
 }
 
 func push(db *sql.DB, c chan RawEntry) {
-  insert, err := db.Prepare("insert into raw_points (timestamp, latitude, longitude, error, value) values (?, ?, ?, ?, ?)")
+  insert, err := db.Prepare("insert into raw_points (timestamp, latitude, longitude, error, value) values (FROM_UNIXTIME(?), ?, ?, ?, ?)")
   if err != nil {
     panic(err.Error())
   }
