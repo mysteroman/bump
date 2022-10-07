@@ -10,7 +10,7 @@ import (
 )
 
 type RawEntry struct {
-  Timestamp time
+  Timestamp time.Time
   Lat, Long, Err, Value float64
 }
 
@@ -31,7 +31,7 @@ func readFloat64(bytes []byte) float64 {
 
 func newRawEntry(data []byte) RawEntry {
   return RawEntry{
-    time.Unix(int64(readUInt64(data[0:8]))),
+    time.Unix(int64(readUInt64(data[0:8])), 0),
     readFloat64(data[8:16]),
     readFloat64(data[16:24]),
     readFloat64(data[24:32]),
