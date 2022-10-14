@@ -12,7 +12,7 @@ import (
 )
 
 type RawEntry struct {
-  Timestamp time.Time
+  Timestamp int64
   Lat, Long, Err, Value float64
 }
 
@@ -33,7 +33,7 @@ func readFloat64(bytes []byte) float64 {
 
 func newRawEntry(data []byte) RawEntry {
   return RawEntry{
-    time.Unix(int64(readUInt64(data[0:8])), 0),
+    int64(readUInt64(data[0:8])),
     readFloat64(data[8:16]),
     readFloat64(data[16:24]),
     readFloat64(data[24:32]),
@@ -48,7 +48,27 @@ func push(db *sql.DB, c chan RawEntry) {
   defer insert.Close()
 
   for entry := range c {
-    _, err := insert.Exec(entry.Timestamp, entry.Lat, entry.Long, entry.Err, entry.Value)
+    currentTime := time.Now().UTC()
+
+
+    currentMillis := currentTime.UnixMilli()
+    if entry.Timestamp > currentMillis || entry.Timestamp + 1000 < currentMillis {
+      continue
+    }
+    if math.IsNaN(entry.Lat) || math.IsInf(entry.Lat, 0) || entry.Lat < -90 || entry.Lat > 90 {
+      continue
+    }
+    if math.IsNaN(entry.Long) || math.IsInf(entry.Long, 0) || entry.Long < -180 || entry.Long > 180 {
+      continue
+    }
+    if math.IsNaN(entry.Err) || math.IsInf(entry.Err, 0) || entry.Err < 0 || entry.Err > 1000 {
+      continue
+    }
+    if math.IsNaN(entry.Value) || math.IsInf(entry.Value, 0) || entry.Value < 0 {
+      continue
+    }
+
+    _, err := insert.Exec(time.UnixMilli(entry.Timestamp).UTC(), entry.Lat, entry.Long, entry.Err, entry.Value)
     if err != nil {
       panic(err.Error())
     }
