@@ -47,9 +47,15 @@ func push(db *sql.DB, c chan RawEntry) {
   }
   defer insert.Close()
 
+  lastUpdateYear, lastUpdateMonth, lastUpdateDay := time.Now().UTC().Date()
   for entry := range c {
     currentTime := time.Now().UTC()
-
+    currentYear, currentMonth, currentDay := currentTime.Date()
+    if currentYear > lastUpdateYear || currentMonth > lastUpdateMonth || currentDay > lastUpdateDay {
+      lastUpdateYear, lastUpdateMonth, lastUpdateDay = currentYear, currentMonth, currentDay
+      update(db)
+      currentTime = time.Now().UTC()
+    }
 
     currentMillis := currentTime.UnixMilli()
     if entry.Timestamp > currentMillis || entry.Timestamp + 1000 < currentMillis {
@@ -73,6 +79,10 @@ func push(db *sql.DB, c chan RawEntry) {
       panic(err.Error())
     }
   }
+}
+
+func update(db *sql.DB) {
+
 }
 
 func main() {
