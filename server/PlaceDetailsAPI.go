@@ -1,3 +1,5 @@
+package server
+
 import (
   "strings"
   "net/http"
