@@ -29,10 +29,10 @@ func ReadPacket(data []byte, n int64, c chan *RawEntry) {
 
 func newRawEntry(data []byte) *RawEntry {
   return &RawEntry{
-    readInt64(data[0:8])
-    readFloat64(data[8:16])
-    readFloat64(data[16:24])
-    readFloat64(data[24:32])
+    readInt64(data[0:8]),
+    readFloat64(data[8:16]),
+    readFloat64(data[16:24]),
+    readFloat64(data[24:32]),
     readFloat64(data[32:40])}
 }
 
