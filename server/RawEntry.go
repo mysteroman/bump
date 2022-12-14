@@ -12,7 +12,7 @@ type RawEntry struct {
   Lat, Long, Err, Value float64
 }
 
-func ReadPacket(data []byte, n int64, c chan *RawEntry) {
+func ReadPacket(data []byte, n int, c chan *RawEntry) {
   if n % 40 != 8 {
     return
   }
@@ -22,8 +22,7 @@ func ReadPacket(data []byte, n int64, c chan *RawEntry) {
   if !verifyKey(timestamp, key) {
     return
   }
-  var i int64
-  for i = 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     c <- newRawEntry(data[i*40:(i+1)*40])
   }
 }

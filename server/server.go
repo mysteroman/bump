@@ -56,7 +56,7 @@ func update(db *sql.DB) {
     var i uint64
     for i, hasNext = 0, rows.Next(); i < 100 && hasNext; hasNext = rows.Next() {
       if entry := ReadRawEntry(rows); entry != nil {
-        append(raw[i], entry)
+        append(raw, entry)
         i++
       }
     }
@@ -65,6 +65,7 @@ func update(db *sql.DB) {
       panic(err.Error())
     }
 
+    var v []*ValidEntry
     if v, err := ValidateRawEntries(raw); err != nil {
       panic(err.Error())
     }
@@ -82,10 +83,10 @@ func update(db *sql.DB) {
     panic(err.Error())
   }
 
-  average(db, placeIds)
+  average(db)
 }
 
-func average(db *sql.DB, places map[string]*string) {
+func average(db *sql.DB) {
   rows, err := db.Query(
     `select distinct v.place_id from valid_point v
     left join average_point a on v.place_id = a.place_id
@@ -107,7 +108,8 @@ func average(db *sql.DB, places map[string]*string) {
     if err := rows.Scan(&id); err != nil {
       continue
     }
-    if name, err := GetRoadName(id); err != nil {
+    var name string
+    if name, err := GetRoadName(id); err == nil {
       continue
     }
     insert.Exec(id, name)
@@ -130,7 +132,7 @@ func average(db *sql.DB, places map[string]*string) {
   where v3.value between v4.average - v4.std and v4.average + v4.std
   group by v3.place_id
   */
-  _, err := db.Exec(
+  _, err = db.Exec(
     `update average_point a, (
        select v3.place_id, AVG(v3.value) average from valid_point v3
        join (

@@ -1,7 +1,6 @@
 package main
 
 import (
-  "strings"
   "net/http"
   "io"
   "encoding/json"
@@ -11,7 +10,7 @@ const base_url = "https://maps.googleapis.com/maps/api/place/details/json?fields
 
 type response struct {
   result struct {
-    name string
+    formatted_address string
   }
 }
 
@@ -33,5 +32,5 @@ func GetRoadName(placeId string) (string, error) {
     return "", err
   }
 
-  return data.result.name, nil
+  return data.result.formatted_address, nil
 }
