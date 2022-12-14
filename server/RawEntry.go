@@ -22,7 +22,7 @@ func ReadPacket(data []byte, n int64, c chan *RawEntry) {
   if !verifyKey(timestamp, key) {
     return
   }
-  for i int64 = 0; i < n; i++ {
+  for var i int64 = 0; i < n; i++ {
     c <- newRawEntry(data[i*40:(i+1)*40])
   }
 }
