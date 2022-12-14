@@ -70,7 +70,7 @@ func update(db *sql.DB) {
       panic(err.Error())
     }
 
-    for valid := range v {
+    for _, valid := range v {
       _, err = insert.Exec(valid.Timestamp, valid.PlaceID, valid.Value)
       if err != nil {
         panic(err.Error())
@@ -109,7 +109,7 @@ func average(db *sql.DB) {
       continue
     }
     var name string
-    if name, err := GetRoadName(id); err == nil {
+    if name, err = GetRoadName(id); err == nil {
       continue
     }
     insert.Exec(id, name)
