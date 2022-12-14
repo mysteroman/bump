@@ -1,7 +1,6 @@
 package main
 
 import (
-  "bump/server/server"
   "os"
   "fmt"
   "net"
