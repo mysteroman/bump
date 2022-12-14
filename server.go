@@ -1,44 +1,18 @@
 package main
 
 import (
+  "bump/server/server"
   "os"
   "fmt"
   "net"
-  "math"
   "time"
   "database/sql"
   "github.com/joho/godotenv"
   _ "github.com/go-sql-driver/mysql"
 )
 
-type RawEntry struct {
-  Timestamp int64
-  Lat, Long, Err, Value float64
-}
-
-func readUInt64(bytes []byte) uint64 {
-  var result uint64 = 0
-  for i, b := range bytes {
-    if i >= 8 {
-      break
-    }
-    result = (result << 8) | uint64(b)
-  }
-  return result
-}
-
-func readFloat64(bytes []byte) float64 {
-  return math.Float64frombits(readUInt64(bytes))
-}
-
-func newRawEntry(data []byte) RawEntry {
-  return RawEntry{
-    int64(readUInt64(data[0:8])),
-    readFloat64(data[8:16]),
-    readFloat64(data[16:24]),
-    readFloat64(data[24:32]),
-    readFloat64(data[32:40])}
-}
+type RawEntry *server.RawEntry
+type ValidEntry *server.ValidEntry
 
 func push(db *sql.DB, c chan RawEntry) {
   insert, err := db.Prepare("insert into raw_point (timestamp, latitude, longitude, error, value) values (?, ?, ?, ?, ?)")
@@ -57,24 +31,11 @@ func push(db *sql.DB, c chan RawEntry) {
       currentTime = time.Now().UTC()
     }
 
-    currentMillis := currentTime.UnixMilli()
-    if entry.Timestamp > currentMillis || entry.Timestamp + 1000 < currentMillis {
-      continue
-    }
-    if math.IsNaN(entry.Lat) || math.IsInf(entry.Lat, 0) || entry.Lat < -90 || entry.Lat > 90 {
-      continue
-    }
-    if math.IsNaN(entry.Long) || math.IsInf(entry.Long, 0) || entry.Long < -180 || entry.Long > 180 {
-      continue
-    }
-    if math.IsNaN(entry.Err) || math.IsInf(entry.Err, 0) || entry.Err < 0 || entry.Err > 1000 {
-      continue
-    }
-    if math.IsNaN(entry.Value) || math.IsInf(entry.Value, 0) || entry.Value < 0 {
+    if (!entry.Validate(currentTime)) {
       continue
     }
 
-    _, err := insert.Exec(time.UnixMilli(entry.Timestamp).UTC(), entry.Lat, entry.Long, entry.Err, entry.Value)
+    _, err = insert.Exec(time.UnixMilli(entry.Timestamp).UTC(), entry.Lat, entry.Long, entry.Err, entry.Value)
     if err != nil {
       panic(err.Error())
     }
@@ -82,7 +43,117 @@ func push(db *sql.DB, c chan RawEntry) {
 }
 
 func update(db *sql.DB) {
+  rows, err := db.Query("select timestamp, latitude, longitude, error, value from raw_point")
+  if err != nil {
+    panic(err.Error())
+  }
+  defer rows.Close()
 
+  insert, err := db.Prepare("insert into valid_point (timestamp, place_id, value) values (?, ?, ?)")
+  if err != nil {
+    panic(err.Error())
+  }
+  defer insert.Close()
+
+  for hasNext := true; hasNext; {
+    raw := make([]RawEntry, 100)
+    var i uint64
+    for i, hasNext = 0, rows.Next(); i < 100 && hasNext; hasNext = rows.Next() {
+      if entry := ReadRawEntry(rows); entry != nil {
+        append(raw[i], entry)
+        i++
+      }
+    }
+
+    if err := rows.Err(); err != nil {
+      panic(err.Error())
+    }
+
+    if v, err := server.ValidateRawEntries(raw); err != nil {
+      panic(err.Error())
+    }
+
+    for valid := range v {
+      _, err = insert.Exec(valid.Timestamp, valid.PlaceID, valid.Value)
+      if err != nil {
+        panic(err.Error())
+      }
+    }
+  }
+
+  _, err = db.Exec("delete from raw_point")
+  if err != nil {
+    panic(err.Error())
+  }
+
+  average(db, placeIds)
+}
+
+func average(db *sql.DB, places map[string]*string) {
+  rows, err := db.Query(
+    `select distinct v.place_id from valid_point v
+    left join average_point a on v.place_id = a.place_id
+    where a.place_id is null
+    group by v.place_id`
+  )
+  if err != nil {
+    panic(err.Error())
+  }
+  defer rows.Close()
+
+  insert, err := db.Prepare("insert into average_point (place_id, route, value) values (?, ?, 0)")
+  if err != nil {
+    panic(err.Error())
+  }
+  defer insert.Close()
+
+  for rows.Next() {
+    var id string
+    if err := rows.Scan(&id); err != nil {
+      continue
+    }
+    if name, err := server.GetRoadName(id); err != nil {
+      continue
+    }
+    insert.Exec(id, name)
+  }
+
+  if err := rows.Err(); err != nil {
+    panic(err.Error())
+  }
+  /*
+  select v3.place_id, AVG(v3.value) average from valid_point v3
+  join (
+    select v1.place_id, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2)) / COUNT(v1.value)) as std
+    from valid_point v1
+    join (
+      select place_id, AVG(value) average
+      from valid_point group by place_id
+    ) v2 on v1.place_id = v2.place_id
+    group by v1.place_id
+  ) v4 on v3.place_id = v4.place_id
+  where v3.value between v4.average - v4.std and v4.average + v4.std
+  group by v3.place_id
+  */
+  _, err := db.Exec(
+    `update average_point a, (
+       select v3.place_id, AVG(v3.value) average from valid_point v3
+       join (
+         select v1.place_id, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2)) / COUNT(v1.value)) as std
+         from valid_point v1
+         join (
+           select place_id, AVG(value) average
+           from valid_point group by place_id
+         ) v2 on v1.place_id = v2.place_id
+         group by v1.place_id
+       ) v4 on v3.place_id = v4.place_id
+       where v3.value between v4.average - v4.std and v4.average + v4.std
+       group by v3.place_id
+     ) v set a.value = v.average where a.place_id = v.place_id`
+  )
+  if err != nil {
+    panic(err.Error())
+  }
 }
 
 func main() {
@@ -130,12 +201,6 @@ func main() {
     if err != nil {
       panic(err.Error())
     }
-    if n % 40 != 0 {
-      continue
-    }
-    n = n / 40
-    for i := 0; i < n; i++ {
-      c <- newRawEntry(buffer[i*40:(i+1)*40])
-    }
+    server.ReadPacket(buffer, n, c)
   }
 }

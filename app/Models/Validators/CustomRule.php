@@ -4,14 +4,10 @@ use Zephyrus\Application\Rule;
 
 class CustomRule
 {
-    public static function userAvailable(string $errorMessage = ""): Rule
+    public static function placeId(): Rule
     {
         return new Rule(function($data) {
-            /**
-             * Example of custom rule that could verify user availability
-             * from Database.
-             */
-            return !in_array($data, ['blewis', 'dtucker', 'admin', 'root']);
-        }, $errorMessage);
+            return preg_match('/^[a-zA-Z0-9_\-]+$/', $data);
+        });
     }
 }

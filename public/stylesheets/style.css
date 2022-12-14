@@ -1,0 +1,41 @@
+@import "vendor/bootstrap.min.css";
+@import "vendor/fontawesome.min.css";
+
+#container {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: auto;
+}
+
+#header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 64px;
+    width: 100vw;
+}
+
+#body {
+    flex-grow: 1;
+}
+
+#route {
+    flex-grow: 1;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.damage-bar {
+    background: linear-gradient(to right, #0ff, #0f0, #ff0, #f00);
+    background-size: 100%;
+}
