@@ -10,10 +10,7 @@ import (
   _ "github.com/go-sql-driver/mysql"
 )
 
-type RawEntry *server.RawEntry
-type ValidEntry *server.ValidEntry
-
-func push(db *sql.DB, c chan RawEntry) {
+func push(db *sql.DB, c chan *RawEntry) {
   insert, err := db.Prepare("insert into raw_point (timestamp, latitude, longitude, error, value) values (?, ?, ?, ?, ?)")
   if err != nil {
     panic(err.Error())
@@ -30,7 +27,7 @@ func push(db *sql.DB, c chan RawEntry) {
       currentTime = time.Now().UTC()
     }
 
-    if (!entry.Validate(currentTime)) {
+    if (!entry.IsValid(currentTime)) {
       continue
     }
 
@@ -55,7 +52,7 @@ func update(db *sql.DB) {
   defer insert.Close()
 
   for hasNext := true; hasNext; {
-    raw := make([]RawEntry, 100)
+    raw := make([]*RawEntry, 100)
     var i uint64
     for i, hasNext = 0, rows.Next(); i < 100 && hasNext; hasNext = rows.Next() {
       if entry := ReadRawEntry(rows); entry != nil {
@@ -68,7 +65,7 @@ func update(db *sql.DB) {
       panic(err.Error())
     }
 
-    if v, err := server.ValidateRawEntries(raw); err != nil {
+    if v, err := ValidateRawEntries(raw); err != nil {
       panic(err.Error())
     }
 
@@ -110,7 +107,7 @@ func average(db *sql.DB, places map[string]*string) {
     if err := rows.Scan(&id); err != nil {
       continue
     }
-    if name, err := server.GetRoadName(id); err != nil {
+    if name, err := GetRoadName(id); err != nil {
       continue
     }
     insert.Exec(id, name)
@@ -188,7 +185,7 @@ func main() {
   fmt.Println("Awaiting requests...")
 
   buffer := make([]byte, 1000)
-  c := make(chan RawEntry, 1)
+  c := make(chan *RawEntry, 1)
   defer close(c)
 
   go push(db, c)
@@ -198,6 +195,6 @@ func main() {
     if err != nil {
       panic(err.Error())
     }
-    server.ReadPacket(buffer, n, c)
+    ReadPacket(buffer, n, c)
   }
 }

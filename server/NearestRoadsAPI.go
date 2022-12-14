@@ -7,7 +7,7 @@ import (
   "encoding/json"
 )
 
-const base_url = "https://roads.googleapis.com/v1/nearestRoads?key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&points="
+const base_roads_url = "https://roads.googleapis.com/v1/nearestRoads?key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&points="
 
 type point struct {
   location struct { latitude, longitude float64 }
@@ -15,7 +15,7 @@ type point struct {
   placeId string
 }
 
-type response struct {
+type roads_response struct {
   snappedPoints []point
 }
 
@@ -36,7 +36,7 @@ func ValidateRawEntries(entries []*RawEntry) ([]*ValidEntry, error) {
     return nil, err
   }
 
-  var data response
+  var data roads_response
   if err := json.Unmarshal(body, &data); err != nil {
     return nil, err
   }
@@ -54,7 +54,7 @@ func ValidateRawEntries(entries []*RawEntry) ([]*ValidEntry, error) {
 }
 
 func buildUrl(entries []*RawEntry) string {
-  url := base_url
+  url := base_roads_url
   points := make([]string, len(entries))
   for i, entry := range entries {
     points[i] = entry.LocationString()

@@ -7,7 +7,7 @@ import (
   "encoding/json"
 )
 
-const base_url = "https://maps.googleapis.com/maps/api/place/details/json?fields=name&key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&place_id="
+const base_url = "https://maps.googleapis.com/maps/api/place/details/json?fields=formatted_address&key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&place_id="
 
 type response struct {
   result struct {
