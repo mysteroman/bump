@@ -153,7 +153,7 @@ func average(db *sql.DB) {
 }
 
 func main() {
-  godotenv.Load()
+  godotenv.Load("../.env")
 
   PORT := ":53"
   s, err := net.ResolveUDPAddr("udp4", PORT)
