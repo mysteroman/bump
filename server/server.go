@@ -93,8 +93,7 @@ func average(db *sql.DB, places map[string]*string) {
     `select distinct v.place_id from valid_point v
     left join average_point a on v.place_id = a.place_id
     where a.place_id is null
-    group by v.place_id`
-  )
+    group by v.place_id`)
   if err != nil {
     panic(err.Error())
   }
@@ -148,8 +147,7 @@ func average(db *sql.DB, places map[string]*string) {
        ) v4 on v3.place_id = v4.place_id
        where v3.value between v4.average - v4.std and v4.average + v4.std
        group by v3.place_id
-     ) v set a.value = v.average where a.place_id = v.place_id`
-  )
+     ) v set a.value = v.average where a.place_id = v.place_id`)
   if err != nil {
     panic(err.Error())
   }
