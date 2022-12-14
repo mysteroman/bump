@@ -56,7 +56,7 @@ func update(db *sql.DB) {
     var i uint64
     for i, hasNext = 0, rows.Next(); i < 100 && hasNext; hasNext = rows.Next() {
       if entry := ReadRawEntry(rows); entry != nil {
-        append(raw, entry)
+        raw[i] = entry
         i++
       }
     }
@@ -66,7 +66,7 @@ func update(db *sql.DB) {
     }
 
     var v []*ValidEntry
-    if v, err := ValidateRawEntries(raw); err != nil {
+    if v, err = ValidateRawEntries(raw); err != nil {
       panic(err.Error())
     }
 
