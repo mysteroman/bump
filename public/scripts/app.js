@@ -67,12 +67,13 @@ function onClickMap(event) {
             return;
         }
 
-        if (!results[0].types.includes('route')) {
+        const result = results.find(elem => elem.types.includes('route'));
+        if (!result) {
             console.info('User clicked on non-route, ignoring');
             return;
         }
 
-        const id = results[0].place_id;
+        const id = result.place_id;
         const response = await axios.get('/api', {
             params: {
                 placeId: id
@@ -96,7 +97,7 @@ function onClickMap(event) {
 function display(data) {
     const container = $('#route');
     container.empty();
-    const title = `<h1>${data ? data.route : 'Aucune sélection'}</h1>`;
+    const title = `<h2>${data ? data.route : 'Aucune sélection'}</h2>`;
     container.append(title);
     if (data) {
         if (data.rank !== undefined) {
