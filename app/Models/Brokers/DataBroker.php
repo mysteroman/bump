@@ -25,7 +25,7 @@ class DataBroker extends Broker
         ), average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
-                select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2)) / COUNT(v1.value)) as std
+                select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
                 from average_point v1
                 join (
                     select route, AVG(value) average
@@ -59,7 +59,7 @@ class DataBroker extends Broker
         ), average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
-                select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2)) / COUNT(v1.value)) as std
+                select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
                 from average_point v1
                 join (
                     select route, AVG(value) average

@@ -136,7 +136,7 @@ func average(db *sql.DB) {
     `update average_point a, (
        select v3.place_id, AVG(v3.value) average from valid_point v3
        join (
-         select v1.place_id, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2)) / COUNT(v1.value)) as std
+         select v1.place_id, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
          from valid_point v1
          join (
            select place_id, AVG(value) average
