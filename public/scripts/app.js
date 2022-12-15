@@ -47,11 +47,9 @@ async function onSearch() {
         return;
     }
 
-    const data = {
-        ...(response.data.route ?? {
-            empty: true
-        }),
-        route: parseName(info.address_components)
+    const data = response.data.route ?? {
+        route: parseName(info.address_components),
+        empty: true
     };
 
     display(data);
@@ -93,11 +91,9 @@ function onClickMap(event) {
             return;
         }
 
-        const data = {
-            ...(response.data.route ?? {
-                empty: true
-            }),
-            route: parseName(result.address_components)
+        const data = response.data.route ?? {
+            route: parseName(result.address_components),
+            empty: true
         };
 
         display(data);
@@ -120,7 +116,7 @@ function display(data) {
         if (data.rank !== undefined) {
             container.append(`<div class="row">
                 <h6 class="col-5 header">Rang global</h6>
-                <h6 class="col-7 text-start" style="font-size: 1.2rem; font-weight: 400">#${data.rank} / ${data.maxRank}</h6>
+                <h6 class="col-7 text-start" style="font-size: 1.2rem; font-weight: 500">#${data.rank}</h6>
             </div>`);
         }
 

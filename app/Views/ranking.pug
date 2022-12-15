@@ -1,0 +1,19 @@
+extends layout
+
+block body
+  .row
+    .col-2 &nbsp;
+    .col-4
+      h2 Les pires routes du Québec
+      .list
+        each route in worst
+        .item
+          .rank=route.rank
+          .name=route.route
+    .col-4
+      h2 Les meilleurs routes du Québec
+      .list
+        each route in best
+          .item
+            .rank=route.rank
+            .name=route.route

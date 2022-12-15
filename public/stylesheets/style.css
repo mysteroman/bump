@@ -60,10 +60,11 @@
 
 #header .logo {
     gap: 1rem;
+    padding-left: 0;
 }
 
 .logo img {
-    height: 48px;
+    height: 100%;
     width: auto;
 }
 
@@ -100,4 +101,34 @@
 
 .damage-bar {
     background: linear-gradient(to right, #0ff, #0f0, #ff0, #f00);
+}
+
+.list {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: start;
+    align-items: stretch;
+}
+
+.item {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: start;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    gap: 1rem;
+}
+
+.item:not(:last-child) {
+    border-bottom: solid 1px black;
+}
+
+.rank {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.name {
+    flex-grow: 1;
+    font-size: 1.2rem;
 }
