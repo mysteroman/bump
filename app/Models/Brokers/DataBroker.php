@@ -5,13 +5,13 @@ class DataBroker extends Broker
 {
     public function getBestRankings(): array
     {
-        $sql = 'select * from average_point order by value asc, route asc limit 10';
+        $sql = 'select * from average_point group by route order by value asc, route asc limit 10';
         return $this->select($sql);
     }
 
     public function getWorstRankings(): array
     {
-        $sql = 'select * from average_point order by value desc, route asc limit 10';
+        $sql = 'select * from average_point group by route  order by value desc, route asc limit 10';
         return $this->select($sql);
     }
 

@@ -1,19 +1,21 @@
 extends layout
 
 block body
-  .row
+  .row.mt-5
     .col-2 &nbsp;
     .col-4
       h2 Les pires routes du Québec
       .list
+        - rank = 1;
         each route in worst
           .item
-            .rank='#' + route.rank
+            .rank='#' + rank++
             .name=route.route
     .col-4
       h2 Les meilleurs routes du Québec
       .list
+        - rank = 1;
         each route in best
           .item
-            .rank='#' + route.rank
+            .rank='#' + rank++
             .name=route.route
