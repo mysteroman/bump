@@ -39,7 +39,7 @@ func GetRoadName(placeId string) (string, error) {
 }
 
 func find(components []struct{types []string; long_name string}, category string) string {
-  for _, component := range data.result.address_components {
+  for _, component := range components {
     for _, cat := range component.types {
       if cat == category {
         return component.long_name
