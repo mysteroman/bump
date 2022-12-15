@@ -127,8 +127,10 @@ function display(data) {
         if (data.global_value !== undefined) {
             container.append(`<div class="row d-flex align-items-center">
                 <h6 class="col-5 header">Dommages globaux</h6>
-                <div class="progress col-7">
-                    <div class="progress-bar damage-bar" style="width: ${data.global_value}%"></div>
+                <div class="col-7">
+                    <div class="progress">
+                        <div class="progress-bar damage-bar" style="width: ${data.global_value}%"></div>
+                    </div>
                 </div>
             </div>`);
         }
@@ -136,8 +138,10 @@ function display(data) {
         if (data.local_value !== undefined) {
             container.append(`<div class="row d-flex align-items-center">
                 <h6 class="col-5 header">Dommages locaux</h6>
-                <div class="progress col-7">
-                    <div class="progress-bar damage-bar" style="width: ${data.local_value}%"></div>
+                <div class="col-7">
+                    <div class="progress">
+                        <div class="progress-bar damage-bar" style="width: ${data.local_value}%"></div>
+                    </div>
                 </div>
             </div>`);
         }
