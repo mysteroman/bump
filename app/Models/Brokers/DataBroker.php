@@ -5,24 +5,56 @@ class DataBroker extends Broker
 {
     public function getBestRankings(): array
     {
-        $sql = 'select * from average_point group by route order by value asc, route asc limit 10';
+        $sql = '
+            with average as (
+                select v3.route, AVG(v3.value) value from average_point v3
+                join (
+                    select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
+                    from average_point v1
+                    join (
+                        select route, AVG(value) average
+                        from average_point group by route
+                    ) v2 on v1.route = v2.route
+                    group by v1.route
+            ) v4 on v3.route = v4.route
+            where v3.value between v4.average - v4.std and v4.average + v4.std
+            group by v3.route
+            select p.* from average_point p
+            join average a on a.route = p.route
+            group by p.route
+            order by a.value asc, p.route asc
+            limit 10';
         return $this->select($sql);
     }
 
     public function getWorstRankings(): array
     {
-        $sql = 'select * from average_point group by route  order by value desc, route asc limit 10';
+        $sql = '
+            with average as (
+                select v3.route, AVG(v3.value) value from average_point v3
+                join (
+                    select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
+                    from average_point v1
+                    join (
+                        select route, AVG(value) average
+                        from average_point group by route
+                    ) v2 on v1.route = v2.route
+                    group by v1.route
+            ) v4 on v3.route = v4.route
+            where v3.value between v4.average - v4.std and v4.average + v4.std
+            group by v3.route
+            select p.* from average_point p
+            join average a on a.route = p.route
+            group by p.route
+            order by a.value desc, p.route asc
+            limit 10';
         return $this->select($sql);
     }
 
     public function findByPlaceId(string $placeId): ?\stdClass
     {
         $sql = '
-        with ranking as (
-            select route, row_number() over (
-                order by value desc, route asc
-            ) rank, count(distinct route) maxRank from average_point group by route
-        ), average as (
+        with average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
                 select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
@@ -35,6 +67,10 @@ class DataBroker extends Broker
             ) v4 on v3.route = v4.route
             where v3.value between v4.average - v4.std and v4.average + v4.std
             group by v3.route
+        ), ranking as (
+            select route, row_number() over (
+                order by value asc, route asc
+            ) rank, count(*) maxRank from average
         ), local as (
             select route, MAX(value) max, MIN(value) min
             from average_point group by route
@@ -53,11 +89,7 @@ class DataBroker extends Broker
     public function findByName(string $name): ?\stdClass
     {
         $sql = '
-        with ranking as (
-            select route, row_number() over (
-                order by value desc, route asc
-            ) rank, count(distinct route) maxRank from average_point group by route
-        ), average as (
+        with average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
                 select v1.route, v2.average, 1.96 * SQRT(AVG(POW(v2.average - v1.value, 2))) as std
@@ -70,6 +102,10 @@ class DataBroker extends Broker
             ) v4 on v3.route = v4.route
             where v3.value between v4.average - v4.std and v4.average + v4.std
             group by v3.route
+        ), ranking as (
+            select route, row_number() over (
+                order by value asc, route asc
+            ) rank, count(*) maxRank from average
         ), global as (
             select MAX(value) max, MIN(value) min from average
         )
