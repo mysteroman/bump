@@ -119,24 +119,24 @@ function display(data) {
     if (data) {
         if (data.rank !== undefined) {
             container.append(`<div class="row">
-                <h6 class="col-3 header">Rang global</h6>
-                <h6 class="col-9 text-end">#${data.rank}/${data.maxRank}</h6>
+                <h6 class="col-5 header">Rang global</h6>
+                <h6 class="col-7 text-start" style="font-size: 1.2rem; font-weight: 400">#${data.rank} / ${data.maxRank}</h6>
             </div>`);
         }
 
         if (data.global_value !== undefined) {
-            container.append(`<div class="row">
-                <h6 class="col-3 header">Dommages globaux</h6>
-                <div class="progress col-9">
+            container.append(`<div class="row d-flex align-items-center">
+                <h6 class="col-5 header">Dommages globaux</h6>
+                <div class="progress col-7">
                     <div class="progress-bar damage-bar" style="width: ${data.global_value}%"></div>
                 </div>
             </div>`);
         }
 
         if (data.local_value !== undefined) {
-            container.append(`<div class="row">
-                <h6 class="col-3 header">Dommages locaux</h6>
-                <div class="progress col-9">
+            container.append(`<div class="row d-flex align-items-center">
+                <h6 class="col-5 header">Dommages locaux</h6>
+                <div class="progress col-7">
                     <div class="progress-bar damage-bar" style="width: ${data.local_value}%"></div>
                 </div>
             </div>`);
