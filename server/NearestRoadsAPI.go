@@ -55,9 +55,12 @@ func ValidateRawEntries(entries []*RawEntry) ([]*ValidEntry, error) {
 
 func buildUrl(entries []*RawEntry) string {
   url := base_roads_url
-  points := make([]string, len(entries))
+  points := make([]string)
   for i, entry := range entries {
-    points[i] = entry.LocationString()
+    if entry == nil {
+      break
+    }
+    points = append(points, entry.LocationString())
   }
   return url + strings.Join(points, "%7C")
 }
