@@ -1,6 +1,10 @@
 @import "vendor/bootstrap.min.css";
 @import "vendor/fontawesome.min.css";
 
+:root, * {
+    box-sizing: border-box;
+}
+
 #container {
     display: flex;
     flex-flow: column nowrap;
