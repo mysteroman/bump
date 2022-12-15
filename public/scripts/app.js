@@ -51,7 +51,7 @@ async function onSearch() {
         ...(response.data.route ?? {
             empty: true
         }),
-        route: info.address_components.long_name
+        route: parseName(info.address_components)
     };
 
     display(data);
@@ -97,11 +97,18 @@ function onClickMap(event) {
             ...(response.data.route ?? {
                 empty: true
             }),
-            route: result.address_components.long_name
+            route: parseName(result.address_components)
         };
 
         display(data);
     });
+}
+
+function parseName(components) {
+    const route = components.find(elem => elem.types.includes('route'));
+    const locality = components.find(elem => elem.types.includes('locality'));
+
+    return `${route.long_name}, ${locality.long_name}`;
 }
 
 function display(data) {
