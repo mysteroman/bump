@@ -55,8 +55,8 @@ func ValidateRawEntries(entries []*RawEntry) ([]*ValidEntry, error) {
 
 func buildUrl(entries []*RawEntry) string {
   url := base_roads_url
-  points := make([]string)
-  for i, entry := range entries {
+  points := make([]string, 0)
+  for _, entry := range entries {
     if entry == nil {
       break
     }
