@@ -6,11 +6,14 @@ import (
   "encoding/json"
 )
 
-const base_url = "https://maps.googleapis.com/maps/api/place/details/json?fields=formatted_address&key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&place_id="
+const base_url = "https://maps.googleapis.com/maps/api/place/details/json?fields=address_components&key=AIzaSyCpzHxqHktEbM3YTgTzRHZi6ilSJZdtoKc&place_id="
 
 type response struct {
   result struct {
-    formatted_address string
+    address_components []struct {
+      types []string
+      long_name string
+    }
   }
 }
 
@@ -32,5 +35,16 @@ func GetRoadName(placeId string) (string, error) {
     return "", err
   }
 
-  return data.result.formatted_address, nil
+  return find(data.result.address_components, "route") + ", " + find(data.result.address_components, "locality"), nil
+}
+
+func find(components []struct{types []string, long_name string}, category string) string {
+  for _, component := range data.result.address_components {
+    for _, cat := range component.types {
+      if cat == category {
+        return component.long_name
+      }
+    }
+  }
+  return category
 }

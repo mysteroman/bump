@@ -21,7 +21,7 @@ function init() {
             east: -63,
             north: 63
         },
-        fields: ["formatted_address", 'address_components', 'geometry'],
+        fields: ['address_components', 'geometry'],
         componentRestrictions: {
             country: 'ca'
         },
@@ -38,7 +38,7 @@ async function onSearch() {
 
     const response = await axios.get('/api', {
         params: {
-            route: info.formatted_address
+            route: parseName(info.address_components)
         }
     });
 
