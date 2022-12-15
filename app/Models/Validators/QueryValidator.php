@@ -14,7 +14,7 @@ class QueryValidator
         $form->field('route')->validate([
             Rule::notEmpty(),
             Rule::maxLength(255)
-        ], true);
+        ]);
         if (!$form->verify()) return false;
         $obj = $form->buildObject();
         return !empty($obj->placeId) || !empty($obj->route) && !(!empty($obj->placeId) && !empty($obj->route));

@@ -82,7 +82,8 @@ function onClickMap(event) {
         const id = result.place_id;
         const response = await axios.get('/api', {
             params: {
-                placeId: id
+                placeId: id,
+                route: parseName(result.address_components)
             }
         });
 

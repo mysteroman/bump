@@ -19,7 +19,10 @@ class DataService
     {
         if (!QueryValidator::validate($form)) return null;
         $obj = $form->buildObject();
-        if (!empty($obj->placeId)) return (new DataBroker())->findByPlaceId($obj->placeId);
+        if (!empty($obj->placeId)) {
+            $result = (new DataBroker())->findByPlaceId($obj->placeId);
+            if ($result != null) return $result;
+        }
         return (new DataBroker())->findByName($obj->route);
     }
 }
