@@ -16,9 +16,10 @@ class DataBroker extends Broker
                         from average_point group by route
                     ) v2 on v1.route = v2.route
                     group by v1.route
-            ) v4 on v3.route = v4.route
-            where v3.value between v4.average - v4.std and v4.average + v4.std
-            group by v3.route
+                ) v4 on v3.route = v4.route
+                where v3.value between v4.average - v4.std and v4.average + v4.std
+                group by v3.route
+            )
             select * from average
             order by value asc, route asc
             limit 10';
@@ -38,9 +39,10 @@ class DataBroker extends Broker
                         from average_point group by route
                     ) v2 on v1.route = v2.route
                     group by v1.route
-            ) v4 on v3.route = v4.route
-            where v3.value between v4.average - v4.std and v4.average + v4.std
-            group by v3.route
+                ) v4 on v3.route = v4.route
+                where v3.value between v4.average - v4.std and v4.average + v4.std
+                group by v3.route
+            )
             select * from average
             order by value desc, route asc
             limit 10';
