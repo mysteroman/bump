@@ -21,7 +21,7 @@ class DataBroker extends Broker
         with ranking as (
             select route, row_number() over (
                 order by value desc, route asc
-            ) rank, count(*) maxRank from average_point group by route
+            ) rank, count(distinct route) maxRank from average_point group by route
         ), average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
@@ -56,7 +56,7 @@ class DataBroker extends Broker
         with ranking as (
             select route, row_number() over (
                 order by value desc, route asc
-            ) rank, count(*) maxRank from average_point group by route
+            ) rank, count(distinct route) maxRank from average_point group by route
         ), average as (
             select v3.route, AVG(v3.value) value from average_point v3
             join (
