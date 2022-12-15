@@ -129,7 +129,7 @@ function display(data) {
                 <h6 class="col-5 header">Dommages globaux</h6>
                 <div class="col-7">
                     <div class="progress">
-                        <div class="progress-bar damage-bar" style="width: ${data.global_value}%"></div>
+                        <div class="progress-bar damage-bar" style="width: ${data.global_value}%; background-size: ${100 / (data.global_value / 100)}%"></div>
                     </div>
                 </div>
             </div>`);
@@ -140,7 +140,7 @@ function display(data) {
                 <h6 class="col-5 header">Dommages locaux</h6>
                 <div class="col-7">
                     <div class="progress">
-                        <div class="progress-bar damage-bar" style="width: ${data.local_value}%"></div>
+                        <div class="progress-bar damage-bar" style="width: ${data.local_value}%; background-size: ${100 / (data.local_value / 100)}%"></div>
                     </div>
                 </div>
             </div>`);
