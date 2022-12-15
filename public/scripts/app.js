@@ -21,7 +21,7 @@ function init() {
             east: -63,
             north: 63
         },
-        fields: ["formatted_address"],
+        fields: ["formatted_address", 'address_components', 'geometry'],
         componentRestrictions: {
             country: 'ca'
         },
@@ -47,12 +47,20 @@ async function onSearch() {
         return;
     }
 
-    const data = response.data.route ?? {
-        route: info.formatted_address,
-        empty: true
+    const data = {
+        ...(response.data.route ?? {
+            empty: true
+        }),
+        route: info.address_components.long_name
     };
 
     display(data);
+
+    if (!info.geometry || !info.geometry.location) return;
+    const bounds = new google.maps.LatLngBounds();
+    if (info.geometry.viewport) bounds.union(info.geometry.viewport);
+    else bounds.extend(info.geometry.location);
+    map.fitBounds(bounds);
 }
 
 function onClickMap(event) {
@@ -85,9 +93,11 @@ function onClickMap(event) {
             return;
         }
 
-        const data = response.data.route ?? {
-            route: results[0].formatted_address,
-            empty: true
+        const data = {
+            ...(response.data.route ?? {
+                empty: true
+            }),
+            route: result.address_components.long_name
         };
 
         display(data);

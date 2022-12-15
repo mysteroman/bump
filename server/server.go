@@ -184,6 +184,10 @@ func main() {
     panic(err.Error())
   }
 
+  if len(os.Args) > 1 && os.Args[1] == "update" {
+    update(db)
+  }
+
   fmt.Println("Awaiting requests...")
 
   buffer := make([]byte, 1000)
