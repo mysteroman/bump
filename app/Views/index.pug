@@ -2,12 +2,13 @@ extends layout
 
 block body
   .row.h-100
-    .col-7.h-100
+    .col-7.h-100.p-0
       #map
-    .col-5.d-flex.flex-column
-      .input-group.rounded.m-3.p-0
-        input#search-input(type='search' placeholder='Rechercher').form-control.rounded
-        span.input-group-text.border-0: i.fas.fa-search
+    .col-5.p-0
+      form
+        .input-group.rounded.m-3.p-0
+          input#search-input(type='search' placeholder='Rechercher').form-control.rounded
+          span.input-group-text.border-0: i.fas.fa-search
       #route.text-center.m-3
         h2 Aucune sélection
 
