@@ -19,10 +19,8 @@ class DataBroker extends Broker
             ) v4 on v3.route = v4.route
             where v3.value between v4.average - v4.std and v4.average + v4.std
             group by v3.route
-            select p.* from average_point p
-            join average a on a.route = p.route
-            group by p.route
-            order by a.value asc, p.route asc
+            select * from average
+            order by value asc, route asc
             limit 10';
         return $this->select($sql);
     }
@@ -43,10 +41,8 @@ class DataBroker extends Broker
             ) v4 on v3.route = v4.route
             where v3.value between v4.average - v4.std and v4.average + v4.std
             group by v3.route
-            select p.* from average_point p
-            join average a on a.route = p.route
-            group by p.route
-            order by a.value desc, p.route asc
+            select * from average
+            order by value desc, route asc
             limit 10';
         return $this->select($sql);
     }
