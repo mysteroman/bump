@@ -127,7 +127,7 @@ function display(data) {
         if (data.global_value !== undefined) {
             container.append(`<div class="row">
                 <h6 class="col-3 header">Dommages globaux</h6>
-                <div class="progress">
+                <div class="progress col-9">
                     <div class="progress-bar damage-bar" style="width: ${data.global_value}%"></div>
                 </div>
             </div>`);
@@ -136,7 +136,7 @@ function display(data) {
         if (data.local_value !== undefined) {
             container.append(`<div class="row">
                 <h6 class="col-3 header">Dommages locaux</h6>
-                <div class="progress">
+                <div class="progress col-9">
                     <div class="progress-bar damage-bar" style="width: ${data.local_value}%"></div>
                 </div>
             </div>`);
