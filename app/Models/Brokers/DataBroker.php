@@ -41,7 +41,8 @@ class DataBroker extends Broker
         ), global as (
             select MAX(value) max, MIN(value) min from average
         )
-        select a.route, a.place_id, r.rank, r.maxRank, ((a.value - l.min) / (l.max - l.min)) * 100 local_value, ((a2.value - g.min) / (g.max - g.min)) * 100 global_value from average_point a, global g
+        select a.route, a.place_id, r.rank, r.maxRank, ((a.value - l.min) / (l.max - l.min)) * 100 local_value, ((a2.value - g.min) / (g.max - g.min)) * 100 global_value from average_point a
+        join global g on 1=1
         join ranking r on r.route = a.route
         join local l on l.route = a.route
         join average a2 on a2.route = a.route
@@ -72,7 +73,8 @@ class DataBroker extends Broker
         ), global as (
             select MAX(value) max, MIN(value) min from average
         )
-        select a.route, a.place_id, r.rank, r.maxRank, ((a2.value - g.min) / (g.max - g.min)) * 100 global_value from average_point a, global g
+        select a.route, a.place_id, r.rank, r.maxRank, ((a2.value - g.min) / (g.max - g.min)) * 100 global_value from average_point a
+        join global g on 1=1
         join ranking r on r.route = a.route
         join average a2 on a2.route = a.route
         where a.route = ?';
