@@ -34,7 +34,7 @@ function init() {
 async function onSearch() {
     const info = searchBox.getPlace();
     display(undefined);
-    if (!info || !info.formatted_address) return;
+    if (!info || !info.address_components) return;
 
     const response = await axios.get('/api', {
         params: {
